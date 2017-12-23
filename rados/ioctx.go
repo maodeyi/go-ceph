@@ -238,7 +238,7 @@ type ObjectListFunc func(oid string)
 // to the function the name of the object.
 func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 	var ctx C.rados_list_ctx_t
-	rados_ioctx_set_namespace(ioctx.ioctx, nil)
+	C.rados_ioctx_set_namespace(ioctx.ioctx, nil)
 	ret := C.rados_nobjects_list_open(ioctx.ioctx, &ctx)
 	if ret < 0 {
 		return GetRadosError(int(ret))
