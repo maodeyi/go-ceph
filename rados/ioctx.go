@@ -253,7 +253,9 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 		} else if ret != 0 {
 			return GetRadosError(int(ret))
 		}
+		fmt.Println("bneginlist")
 		listFn(C.GoString(c_entry))
+		fmt.Println("end")
 	}
 
 	panic("invalid state")
