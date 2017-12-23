@@ -14,6 +14,7 @@ package rados
 import "C"
 
 import (
+	"fmt"
 	"syscall"
 	"time"
 	"unsafe"
