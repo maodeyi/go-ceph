@@ -625,7 +625,7 @@ func (iter *Iter) Seek(token IterToken) {
 //
 func (iter *Iter) Next() bool {
 	var c_entry *C.char
-	if cerr := C.rados_objects_list_next(iter.ctx, &c_entry, nil); cerr < 0 {
+	if cerr := C.rados_nobjects_list_next(iter.ctx, &c_entry, nil, nil); cerr < 0 {
 		iter.err = GetRadosError(int(cerr))
 		return false
 	}
