@@ -594,7 +594,7 @@ type IterToken uint32
 // Return a Iterator object that can be used to list the object names in the current pool
 func (ioctx *IOContext) Iter() (*Iter, error) {
 	iter := Iter{}
-	if cerr := C.rados_objects_list_open(ioctx.ioctx, &iter.ctx); cerr < 0 {
+	if cerr := C.rados_nobjects_list_open(ioctx.ioctx, &iter.ctx); cerr < 0 {
 		return nil, GetRadosError(int(cerr))
 	}
 	return &iter, nil
