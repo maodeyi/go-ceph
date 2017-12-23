@@ -250,7 +250,7 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, nil)
 		if ret == -2 { // FIXME
 			return nil
-		} else if ret < 0 {
+		} else if ret != 0 {
 			return GetRadosError(int(ret))
 		}
 		listFn(C.GoString(c_entry))
