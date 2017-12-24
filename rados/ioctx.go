@@ -247,7 +247,7 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 
 	for {
 		var c_entry *C.char
-		ret := C.rados_objects_list_next(ctx, &c_entry, nil, nil)
+		ret := C.rados_objects_list_next(ctx, &c_entry, nil)
 		if ret == -2 { // FIXME
 			return nil
 		} else if ret != 0 {
@@ -264,8 +264,9 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 // ListObjects lists all of the objects in the pool associated with the I/O
 // context, and called the provided listFn function for each object, passing
 // to the function the name of the object.
-func (ioctx *IOContext) ListNObjects(listFn ObjectListFunc) error {
+func (ioctx *IOContext) ListNObjects(ns string, listFn ObjectListFunc) error {
 	var ctx C.rados_list_ctx_t
+	C.rados_ioctx_set_namespace(ioctx.ioctx, ns)
 	ret := C.rados_nobjects_list_open(ioctx.ioctx, &ctx)
 	if ret < 0 {
 		return GetRadosError(int(ret))
@@ -274,7 +275,7 @@ func (ioctx *IOContext) ListNObjects(listFn ObjectListFunc) error {
 
 	for {
 		var c_entry *C.char
-		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, nil)
+		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, ns)
 		if ret == -2 { // FIXME
 			return nil
 		} else if ret != 0 {
