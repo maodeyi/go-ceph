@@ -267,8 +267,8 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 func (ioctx *IOContext) ListNObjects(ns string, listFn ObjectListFunc) error {
 	var ctx C.rados_list_ctx_t
 	var c_ns *C.char
-	if len(namespace) > 0 {
-		c_ns = C.CString(namespace)
+	if len(ns) > 0 {
+		c_ns = C.CString(ns)
 		defer C.free(unsafe.Pointer(c_ns))
 	}
 	C.rados_ioctx_set_namespace(ioctx.ioctx, c_ns)
