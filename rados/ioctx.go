@@ -266,7 +266,12 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 // to the function the name of the object.
 func (ioctx *IOContext) ListNObjects(ns string, listFn ObjectListFunc) error {
 	var ctx C.rados_list_ctx_t
-	C.rados_ioctx_set_namespace(ioctx.ioctx, ns)
+	var c_ns *C.char
+	if len(namespace) > 0 {
+		c_ns = C.CString(namespace)
+		defer C.free(unsafe.Pointer(c_ns))
+	}
+	C.rados_ioctx_set_namespace(ioctx.ioctx, c_ns)
 	ret := C.rados_nobjects_list_open(ioctx.ioctx, &ctx)
 	if ret < 0 {
 		return GetRadosError(int(ret))
@@ -275,7 +280,7 @@ func (ioctx *IOContext) ListNObjects(ns string, listFn ObjectListFunc) error {
 
 	for {
 		var c_entry *C.char
-		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, ns)
+		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, c_ns)
 		if ret == -2 { // FIXME
 			return nil
 		} else if ret != 0 {
