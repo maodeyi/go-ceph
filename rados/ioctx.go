@@ -280,7 +280,7 @@ func (ioctx *IOContext) ListNObjects(ns string, listFn ObjectListFunc) error {
 
 	for {
 		var c_entry *C.char
-		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, c_ns)
+		ret := C.rados_nobjects_list_next(ctx, &c_entry, nil, &c_ns)
 		if ret == -2 { // FIXME
 			return nil
 		} else if ret != 0 {
