@@ -239,7 +239,33 @@ type ObjectListFunc func(oid string)
 // to the function the name of the object.
 func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 	var ctx C.rados_list_ctx_t
-	C.rados_ioctx_set_namespace(ioctx.ioctx, nil)
+	ret := C.rados_objects_list_open(ioctx.ioctx, &ctx)
+	if ret < 0 {
+		return GetRadosError(int(ret))
+	}
+	defer func() { C.rados_objects_list_close(ctx) }()
+
+	for {
+		var c_entry *C.char
+		ret := C.rados_objects_list_next(ctx, &c_entry, nil, nil)
+		if ret == -2 { // FIXME
+			return nil
+		} else if ret != 0 {
+			return GetRadosError(int(ret))
+		}
+		fmt.Println("bneginlist")
+		listFn(C.GoString(c_entry))
+		fmt.Println("end")
+	}
+
+	panic("invalid state")
+}
+
+// ListObjects lists all of the objects in the pool associated with the I/O
+// context, and called the provided listFn function for each object, passing
+// to the function the name of the object.
+func (ioctx *IOContext) ListNObjects(listFn ObjectListFunc) error {
+	var ctx C.rados_list_ctx_t
 	ret := C.rados_nobjects_list_open(ioctx.ioctx, &ctx)
 	if ret < 0 {
 		return GetRadosError(int(ret))
@@ -261,7 +287,6 @@ func (ioctx *IOContext) ListObjects(listFn ObjectListFunc) error {
 
 	panic("invalid state")
 }
-
 // Stat returns the size of the object and its last modification time
 func (ioctx *IOContext) Stat(object string) (stat ObjectStat, err error) {
 	var c_psize C.uint64_t
